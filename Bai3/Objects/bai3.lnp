@@ -1,0 +1,4 @@
+".\Objects\main1.obj" 
+TO ".\Objects\bai3" 
+
+PRINT(".\Listings\bai3.map")

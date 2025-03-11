@@ -1,0 +1,4 @@
+".\Objects\main.obj" 
+TO ".\Objects\ngat" 
+
+PRINT(".\Listings\ngat.map")

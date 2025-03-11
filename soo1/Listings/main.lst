@@ -1,0 +1,80 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              03/11/2025 15:44:36 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\KELIC\C51\BIN\C51.EXE main.c OMF2 OPTIMIZE(8,SPEED) BROWSE DEBUG PRINT(.\Listings\main.lst) TABS
+                    -(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <AT89X51.H>
+   2          
+   3          void delay_timer1(unsigned int n);
+   4          void delay_timer0(unsigned int n);
+   5          
+   6          void main() {
+   7   1          while (1) {
+   8   2              P1 = 0xFF;          // Bat tat ca LED
+   9   2              delay_timer1(100);   // Delay 1s (100ms x 10) bang Timer 1
+  10   2              P1 = 0x00;          // Tat tat ca LED
+  11   2              delay_timer0(100);   // Delay 2s (100ms x 20) bang Timer 0
+  12   2          }
+  13   1      }
+  14          // Ham delay (n x 100ms) su dung Timer 1 o che do 16-bit (Mode 1)
+  15          void delay_timer1(unsigned int n) {
+  16   1          unsigned int i;
+  17   1          TMOD &= 0x0F;  // Xoa 4 bit cao (giu nguyen Timer 0), cau hinh Timer 1
+  18   1          TMOD |= 0x10;  // Chon Timer 1, Mode 1 (16-bit)
+  19   1      
+  20   1          for (i = 0; i < n; i++) {
+  21   2              TH1 = 0x3C;   // Nap gia tri de tran sau ~100ms voi thach anh 11.0592MHz
+  22   2              TL1 = 0xB0;
+  23   2              TR1 = 1;      // Bat Timer 1
+  24   2      
+  25   2              while (TF1 == 0);  // Cho Timer 1 tran
+  26   2              TR1 = 0;      // Tat Timer 1
+  27   2              TF1 = 0;      // Xoa co tran
+  28   2          }
+  29   1      }
+  30          
+  31          // Ham delay (n x 100ms) su dung Timer 0 o che do 8-bit Auto-reload (Mode 2)
+  32          void delay_timer0(unsigned int n) {
+  33   1          unsigned int i, j, k;
+  34   1      
+  35   1          TMOD &= 0xF0;  // Xoa 4 bit thap (giu nguyen Timer 1), chon Timer 0
+  36   1          TMOD |= 0x02;  // Chon Mode 2: 8-bit tu nap lai (Auto-reload)
+  37   1      
+  38   1          TH0 = 0x1A;    // Nap gia tri tu dong nap lai -> ~250us
+  39   1          TL0 = 0x1A;    // Gia tri khoi tao lan dau
+  40   1      
+  41   1          for (i = 0; i < n; i++) {      // Lap n lan (n x 100ms)
+  42   2              for (j = 0; j < 400; j++) { // Moi lan 250us x 400 = 100ms
+  43   3                  TR0 = 1;                // Bat Timer 0
+  44   3                  while (TF0 == 0);       // Cho khi tran xay ra
+  45   3                  TF0 = 0;                // Xoa co tran
+  46   3              }
+  47   2              TR0 = 0;                   // Tat Timer 0 sau moi 100ms
+  48   2          }
+  49   1      }
+*** WARNING C280 IN LINE 33 OF main.c: 'k': unreferenced local variable
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    113    ----
+C51 COMPILER V9.60.7.0   MAIN                                                              03/11/2025 15:44:36 PAGE 2   
+
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
